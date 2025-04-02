@@ -17,6 +17,20 @@ class ActivityUser extends Model
         'joined_at',
     ];
 
+    protected $casts = [
+        'joined_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * الوقت المنقضي منذ الانضمام بصيغة قابلة للقراءة
+     */
+    public function getJoinedTimeAgoAttribute()
+    {
+        return $this->joined_at->diffForHumans();
+    }
+
     // Relationships
 
     public function user()

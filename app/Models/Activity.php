@@ -24,6 +24,38 @@ class Activity extends Model
         'max_participants',
     ];
 
+    protected $casts = [
+        'date' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+        'donation_goal' => 'decimal:2',
+    ];
+
+    /**
+     * تحديد ما إذا كان النشاط قادمًا
+     */
+    public function isUpcoming()
+    {
+        return $this->status === 'upcoming';
+    }
+
+    /**
+     * تحديد ما إذا كان النشاط منتهيًا
+     */
+    public function isDone()
+    {
+        return $this->status === 'done';
+    }
+
+    /**
+     * تحديد ما إذا كان النشاط ملغيًا
+     */
+    public function isCancelled()
+    {
+        return $this->status === 'cancelled';
+    }
+
     // Relationships
 
     public function organizer()
@@ -33,7 +65,9 @@ class Activity extends Model
 
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'activity_user')->withTimestamps();
+        return $this->belongsToMany(User::class, 'activity_user')
+            ->withTimestamps()
+            ->withPivot('joined_at');
     }
 
     public function category()
@@ -49,5 +83,25 @@ class Activity extends Model
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    /**
+     * إجمالي مبلغ التبرعات لهذا النشاط
+     */
+    public function getTotalDonationsAttribute()
+    {
+        return $this->donations()->sum('amount');
+    }
+
+    /**
+     * نسبة التبرعات المحصلة من الهدف
+     */
+    public function getDonationPercentageAttribute()
+    {
+        if (!$this->donation_goal || $this->donation_goal <= 0) {
+            return 0;
+        }
+        
+        return min(100, round(($this->total_donations / $this->donation_goal) * 100));
     }
 }

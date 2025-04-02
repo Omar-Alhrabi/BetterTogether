@@ -16,6 +16,20 @@ class PostComment extends Model
         'content',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+
+    /**
+     * الوقت المنقضي منذ إضافة التعليق بصيغة قابلة للقراءة
+     */
+    public function getTimeAgoAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
+
     //  Relationships
 
     public function post()

@@ -16,6 +16,21 @@ class Donation extends Model
         'donation_date',
     ];
 
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'donation_date' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * تنسيق المبلغ بالعملة
+     */
+    public function getFormattedAmountAttribute()
+    {
+        return number_format($this->amount, 2) . ' ر.س';
+    }
+
     //  Relationships
 
     public function user()

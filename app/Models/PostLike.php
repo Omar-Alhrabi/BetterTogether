@@ -14,6 +14,19 @@ class PostLike extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * الوقت المنقضي منذ الإعجاب بصيغة قابلة للقراءة
+     */
+    public function getTimeAgoAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
+
     //  Relationships
 
     public function post()

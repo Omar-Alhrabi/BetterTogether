@@ -18,6 +18,49 @@ class Post extends Model
         'image',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+
+    /**
+     * عدد الإعجابات على المنشور
+     */
+    public function getLikesCountAttribute()
+    {
+        return $this->likes()->count();
+    }
+
+    /**
+     * عدد التعليقات على المنشور
+     */
+    public function getCommentsCountAttribute()
+    {
+        return $this->comments()->count();
+    }
+
+    /**
+     * تحديد ما إذا كان المنشور معجب به من قبل مستخدم معين
+     */
+    public function isLikedBy(User $user)
+    {
+        return $this->likes()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * رابط الصورة الكاملة
+     */
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset('storage/' . $this->image);
+        }
+        
+        // صورة افتراضية
+        return asset('images/default-post.jpg');
+    }
+
     // Relationships
 
     public function user()

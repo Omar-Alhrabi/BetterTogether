@@ -45,19 +45,38 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
+    }
+
+    /**
+     * تحديد ما إذا كان المستخدم مشرفًا
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin' || $this->role === 'superadmin';
+    }
+
+    /**
+     * الاسم الكامل للمستخدم
+     */
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
 
     //  Relationships
 
     public function organizedActivities()
     {
-        return $this->hasMany(Activity::class, 'organized_by');
+        return $this->hasMany(Activity::class, 'created_by');
     }
 
     public function joinedActivities()
     {
-        return $this->belongsToMany(Activity::class, 'activity_user');
+        return $this->belongsToMany(Activity::class, 'activity_user')->withTimestamps();
     }
 
     public function donations()

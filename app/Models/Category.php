@@ -11,8 +11,29 @@ class Category extends Model
 
     protected $fillable = [
         'name',
+        'description',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * عدد الأنشطة في هذه الفئة
+     */
+    public function getActivitiesCountAttribute()
+    {
+        return $this->activities()->count();
+    }
+
+    /**
+     * عدد الأنشطة النشطة في هذه الفئة
+     */
+    public function getActiveActivitiesCountAttribute()
+    {
+        return $this->activities()->where('status', 'upcoming')->count();
+    }
 
     public function activities()
     {
