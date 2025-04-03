@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +21,7 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
-        'phone_number',
+        'phone',
         'profile_image',
         'role',
     ];
@@ -52,7 +53,7 @@ class User extends Authenticatable
     }
 
     /**
-     * تحديد ما إذا كان المستخدم مشرفًا
+     * Check if the user is an admin
      */
     public function isAdmin()
     {
@@ -60,7 +61,7 @@ class User extends Authenticatable
     }
 
     /**
-     * الاسم الكامل للمستخدم
+     * Get the user's full name
      */
     public function getFullNameAttribute()
     {

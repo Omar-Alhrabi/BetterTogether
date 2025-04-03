@@ -90,7 +90,7 @@
                 
                 <div class="col-md-6">
                     <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
-                    <input type="date" class="form-control @error('date') is-invalid @enderror" id="date" name="date" value="{{ old('date', $activity->date->format('Y-m-d')) }}" required>
+                    <input type="datetime-local" class="form-control @error('date') is-invalid @enderror" id="date" name="date" value="{{ old('date', $activity->date->format('Y-m-d\TH:i')) }}" required>
                     @error('date')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

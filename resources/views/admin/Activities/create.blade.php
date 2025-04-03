@@ -22,11 +22,10 @@
                     @enderror
                 </div>
                 
-        <!--         <div class="col-md-6">
+                <div class="col-md-6">
                     <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
                     <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
                         <option value="">Select a category</option>
-                        <option value="">Select a ds</option>
                         @foreach($categories as $category)
                         <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
                             {{ $category->name }}
@@ -36,7 +35,7 @@
                     @error('category_id')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                </div> -->
+                </div>
             </div>
             
             <div class="mb-3">
@@ -90,7 +89,7 @@
                 
                 <div class="col-md-6">
                     <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
-                    <input type="date" class="form-control @error('date') is-invalid @enderror" id="date" name="date" value="{{ old('date') }}" required>
+                    <input type="datetime-local" class="form-control @error('date') is-invalid @enderror" id="date" name="date" value="{{ old('date') }}" required>
                     @error('date')
                     <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

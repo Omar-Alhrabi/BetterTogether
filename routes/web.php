@@ -40,13 +40,15 @@ Route::prefix('dashboard')->middleware(['auth', 'verified'])->group(function () 
 
     Route::resource('activities', ActivityController::class);
 
-    Route::resource('posts', PostController::class);
+    // Modified posts routes to only allow viewing and deleting
+    Route::resource('posts', PostController::class)->only(['index', 'show', 'destroy']);
     Route::get('posts/{post}/comments', [PostController::class, 'comments'])->name('posts.comments');
     Route::delete('comments/{id}', [PostController::class, 'deleteComment'])->name('posts.comments.delete');
 
-    Route::resource('comments', CommentController::class);
+    // Comments routes with only view and delete functionality
+    Route::resource('comments', CommentController::class)->only(['index', 'show', 'destroy']);
  
-    Route::resource('donations', DonationController::class);
+    Route::resource('donations', DonationController::class)->only(['index', 'show']);
     Route::get('donation-statistics', [DonationController::class, 'statistics'])->name('donations.statistics');
 
 })

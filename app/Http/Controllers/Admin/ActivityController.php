@@ -7,11 +7,12 @@ use App\Models\Activity;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ActivityController extends Controller
 {
     /**
-     * عرض قائمة الأنشطة
+     * Display a listing of activities
      */
     public function index()
     {
@@ -20,7 +21,7 @@ class ActivityController extends Controller
     }
 
     /**
-     * عرض نموذج إنشاء نشاط جديد
+     * Show the form for creating a new activity
      */
     public function create()
     {
@@ -31,7 +32,7 @@ class ActivityController extends Controller
     }
 
     /**
-     * تخزين نشاط جديد في قاعدة البيانات
+     * Store a newly created activity in storage
      */
     public function store(Request $request)
     {
@@ -47,12 +48,13 @@ class ActivityController extends Controller
             'donation_goal' => 'nullable|numeric|min:0',
         ]);
 
-        // معالجة الصورة إذا تم تحميلها
+        // Process uploaded image if provided
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('activity-images', 'public');
         }
 
+        // Create new activity with validated data
         Activity::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
@@ -62,16 +64,16 @@ class ActivityController extends Controller
             'date' => $validated['date'],
             'status' => $validated['status'],
             'category_id' => $validated['category_id'],
-            'created_by' => \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::id() : null,
+            'created_by' => Auth::id(),
             'donation_goal' => $validated['donation_goal'],
         ]);
 
         return redirect()->route('activities.index')
-            ->with('success', 'تم إنشاء النشاط بنجاح');
+            ->with('success', 'Activity created successfully');
     }
 
     /**
-     * عرض معلومات نشاط محدد
+     * Display the specified activity
      */
     public function show(Activity $activity)
     {
@@ -80,7 +82,7 @@ class ActivityController extends Controller
     }
 
     /**
-     * عرض نموذج تعديل نشاط
+     * Show the form for editing the specified activity
      */
     public function edit(Activity $activity)
     {
@@ -91,7 +93,7 @@ class ActivityController extends Controller
     }
 
     /**
-     * تحديث معلومات نشاط في قاعدة البيانات
+     * Update the specified activity in storage
      */
     public function update(Request $request, Activity $activity)
     {
@@ -118,9 +120,15 @@ class ActivityController extends Controller
             'donation_goal' => $validated['donation_goal'],
         ];
 
-        // معالجة الصورة إذا تم تحميلها
+        // Handle image deletion if requested
+        if ($request->has('delete_image') && $activity->image) {
+            Storage::disk('public')->delete($activity->image);
+            $activityData['image'] = null;
+        }
+        
+        // Handle image upload if provided
         if ($request->hasFile('image')) {
-            // حذف الصورة القديمة إذا كانت موجودة
+            // Delete old image if exists
             if ($activity->image) {
                 Storage::disk('public')->delete($activity->image);
             }
@@ -131,15 +139,15 @@ class ActivityController extends Controller
         $activity->update($activityData);
 
         return redirect()->route('activities.index')
-            ->with('success', 'تم تحديث النشاط بنجاح');
+            ->with('success', 'Activity updated successfully');
     }
 
     /**
-     * حذف نشاط من قاعدة البيانات
+     * Remove the specified activity from storage
      */
     public function destroy(Activity $activity)
     {
-        // حذف الصورة إذا كانت موجودة
+        // Delete image if exists
         if ($activity->image) {
             Storage::disk('public')->delete($activity->image);
         }
@@ -147,6 +155,6 @@ class ActivityController extends Controller
         $activity->delete();
 
         return redirect()->route('activities.index')
-            ->with('success', 'تم حذف النشاط بنجاح');
+            ->with('success', 'Activity deleted successfully');
     }
 }

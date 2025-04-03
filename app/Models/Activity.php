@@ -33,7 +33,7 @@ class Activity extends Model
     ];
 
     /**
-     * تحديد ما إذا كان النشاط قادمًا
+     * Check if the activity is upcoming
      */
     public function isUpcoming()
     {
@@ -41,7 +41,7 @@ class Activity extends Model
     }
 
     /**
-     * تحديد ما إذا كان النشاط منتهيًا
+     * Check if the activity is done
      */
     public function isDone()
     {
@@ -49,7 +49,7 @@ class Activity extends Model
     }
 
     /**
-     * تحديد ما إذا كان النشاط ملغيًا
+     * Check if the activity is cancelled
      */
     public function isCancelled()
     {
@@ -58,11 +58,25 @@ class Activity extends Model
 
     // Relationships
 
+    /**
+     * Get the user who created the activity
+     */
     public function organizer()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * Alias for organizer() to maintain compatibility with existing code
+     */
+    public function creator()
+    {
+        return $this->organizer();
+    }
+
+    /**
+     * Get the users who are participating in the activity
+     */
     public function participants()
     {
         return $this->belongsToMany(User::class, 'activity_user')
@@ -70,23 +84,32 @@ class Activity extends Model
             ->withPivot('joined_at');
     }
 
+    /**
+     * Get the category associated with the activity
+     */
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
+    /**
+     * Get the donations associated with the activity
+     */
     public function donations()
     {
         return $this->hasMany(Donation::class);
     }
 
+    /**
+     * Get the posts associated with the activity
+     */
     public function posts()
     {
         return $this->hasMany(Post::class);
     }
 
     /**
-     * إجمالي مبلغ التبرعات لهذا النشاط
+     * Get the total donations for this activity
      */
     public function getTotalDonationsAttribute()
     {
@@ -94,7 +117,7 @@ class Activity extends Model
     }
 
     /**
-     * نسبة التبرعات المحصلة من الهدف
+     * Get the donation percentage (progress towards goal)
      */
     public function getDonationPercentageAttribute()
     {

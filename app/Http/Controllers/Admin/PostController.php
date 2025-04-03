@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class PostController extends Controller
 {
     /**
-     * عرض قائمة المنشورات
+     * Display a listing of the posts
      */
     public function index()
     {
@@ -22,46 +22,7 @@ class PostController extends Controller
     }
 
     /**
-     * عرض نموذج إنشاء منشور جديد
-     */
-    public function create()
-    {
-        $activities = Activity::all();
-        return view('admin.posts.create', compact('activities'));
-    }
-
-    /**
-     * تخزين منشور جديد في قاعدة البيانات
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'activity_id' => 'nullable|exists:activities,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        // معالجة الصورة إذا تم تحميلها
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('post-images', 'public');
-        }
-
-        Post::create([
-            'title' => $validated['title'],
-            'content' => $validated['content'],
-            'activity_id' => $validated['activity_id'],
-            'image' => $imagePath,
-            'user_id' => Auth::check() ? Auth::id() : null,
-        ]);
-
-        return redirect()->route('posts.index')
-            ->with('success', 'تم إنشاء المنشور بنجاح');
-    }
-
-    /**
-     * عرض معلومات منشور محدد
+     * Display the specified post
      */
     public function show(Post $post)
     {
@@ -70,54 +31,11 @@ class PostController extends Controller
     }
 
     /**
-     * عرض نموذج تعديل منشور
-     */
-    public function edit(Post $post)
-    {
-        $activities = Activity::all();
-        return view('admin.posts.edit', compact('post', 'activities'));
-    }
-
-    /**
-     * تحديث معلومات منشور في قاعدة البيانات
-     */
-    public function update(Request $request, Post $post)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'activity_id' => 'nullable|exists:activities,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        $postData = [
-            'title' => $validated['title'],
-            'content' => $validated['content'],
-            'activity_id' => $validated['activity_id'],
-        ];
-
-        // معالجة الصورة إذا تم تحميلها
-        if ($request->hasFile('image')) {
-            // حذف الصورة القديمة إذا كانت موجودة
-            if ($post->image) {
-                Storage::disk('public')->delete($post->image);
-            }
-            
-            $postData['image'] = $request->file('image')->store('post-images', 'public');
-        }
-
-        $post->update($postData);
-
-        return redirect()->route('posts.index')
-            ->with('success', 'تم تحديث المنشور بنجاح');
-    }
-
-    /**
-     * حذف منشور من قاعدة البيانات
+     * Remove the specified post from database
      */
     public function destroy(Post $post)
     {
-        // حذف الصورة إذا كانت موجودة
+        // Delete the image if it exists
         if ($post->image) {
             Storage::disk('public')->delete($post->image);
         }
@@ -125,11 +43,11 @@ class PostController extends Controller
         $post->delete();
 
         return redirect()->route('posts.index')
-            ->with('success', 'تم حذف المنشور بنجاح');
+            ->with('success', 'Post deleted successfully');
     }
 
     /**
-     * عرض تعليقات المنشور
+     * Display post comments
      */
     public function comments(Post $post)
     {
@@ -138,13 +56,13 @@ class PostController extends Controller
     }
 
     /**
-     * حذف تعليق
+     * Delete a comment
      */
     public function deleteComment($id)
     {
         $comment = PostComment::findOrFail($id);
         $comment->delete();
 
-        return redirect()->back()->with('success', 'تم حذف التعليق بنجاح');
+        return redirect()->back()->with('success', 'Comment deleted successfully');
     }
 }

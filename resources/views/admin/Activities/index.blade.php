@@ -24,6 +24,7 @@
                         <th>Location</th>
                         <th>Date</th>
                         <th>Status</th>
+                        <th>Participants</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -33,12 +34,16 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>
                             @if($activity->image)
-                                <img src="{{ asset('storage/'.$activity->image) }}" width="50" height="50" class="rounded">
+                                <img src="{{ asset('storage/'.$activity->image) }}" width="50" height="50" class="rounded" style="object-fit: cover;">
                             @else
                                 <img src="{{ asset('images/default-activity.jpg') }}" width="50" height="50" class="rounded">
                             @endif
                         </td>
-                        <td>{{ $activity->title }}</td>
+                        <td>
+                            <span class="d-inline-block text-truncate" style="max-width: 150px;">
+                                {{ $activity->title }}
+                            </span>
+                        </td>
                         <td>
                             @if($activity->type == 'join')
                                 <span class="badge bg-info">Join</span>
@@ -48,7 +53,11 @@
                                 <span class="badge bg-primary">Both</span>
                             @endif
                         </td>
-                        <td>{{ $activity->location }}</td>
+                        <td>
+                            <span class="d-inline-block text-truncate" style="max-width: 100px;">
+                                {{ $activity->location }}
+                            </span>
+                        </td>
                         <td>{{ $activity->date->format('Y-m-d') }}</td>
                         <td>
                             @if($activity->status == 'upcoming')
@@ -58,6 +67,11 @@
                             @else
                                 <span class="badge bg-danger">Cancelled</span>
                             @endif
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">
+                                {{ $activity->participants->count() }}
+                            </span>
                         </td>
                         <td>
                             <div class="btn-group" role="group">
@@ -98,7 +112,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center">No activities found</td>
+                        <td colspan="9" class="text-center">No activities found</td>
                     </tr>
                     @endforelse
                 </tbody>

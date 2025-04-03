@@ -59,11 +59,15 @@
                     </tr>
                     <tr>
                         <th>Date</th>
-                        <td>{{ $activity->date->format('F j, Y') }}</td>
+                        <td>{{ $activity->date->format('F j, Y, g:i A') }}</td>
                     </tr>
                     <tr>
                         <th>Organizer</th>
                         <td>{{ $activity->creator->full_name ?? 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Current Participants</th>
+                        <td>{{ $activity->participants->count() }}</td>
                     </tr>
                     <tr>
                         <th>Donation Goal</th>
@@ -78,7 +82,7 @@
                         <td>
                             @if($activity->donation_goal)
                             <div class="progress">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ is_numeric($activity->donation_percentage) && $activity->donation_percentage >= 0 ? $activity->donation_percentage.'%' : '0%' }};" aria-valuenow="{{ is_numeric($activity->donation_percentage) && $activity->donation_percentage >= 0 ? $activity->donation_percentage : 0 }}" aria-valuemin="0" aria-valuemax="100">{{ is_numeric($activity->donation_percentage) && $activity->donation_percentage >= 0 ? $activity->donation_percentage : 0 }}%</div>
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ $activity->donation_percentage ?? 0 }}%;" aria-valuenow="{{ $activity->donation_percentage ?? 0 }}" aria-valuemin="0" aria-valuemax="100">{{ $activity->donation_percentage ?? 0 }}%</div>
                             </div>
                             @else
                             <span class="text-muted">No donation goal set</span>
@@ -121,6 +125,36 @@
                         </ul>
                     </div>
                 </div>
+                
+                <!-- Delete Activity Button -->
+                <div class="mt-4">
+                    <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteActivityModal">
+                        <i class="fas fa-trash me-1"></i> Delete Activity
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Activity Modal -->
+<div class="modal fade" id="deleteActivityModal" tabindex="-1" aria-labelledby="deleteActivityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteActivityModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the activity "{{ $activity->title }}"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ route('activities.destroy', $activity) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
             </div>
         </div>
     </div>

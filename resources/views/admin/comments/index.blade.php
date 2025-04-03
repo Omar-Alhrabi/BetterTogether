@@ -6,11 +6,8 @@
 
 @section('content')
 <div class="card shadow-sm">
-    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <div class="card-header bg-white">
         <h5 class="mb-0">Comments List</h5>
-        <a href="{{ route('comments.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus-circle me-1"></i> Add New Comment
-        </a>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -31,19 +28,20 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $comment->user->full_name ?? 'Unknown' }}</td>
                         <td>
+                            @if($comment->post)
                             <a href="{{ route('posts.show', $comment->post) }}">
                                 {{ Str::limit($comment->post->title, 30) }}
                             </a>
+                            @else
+                                <span class="text-muted">Post not found</span>
+                            @endif
                         </td>
                         <td>{{ Str::limit($comment->content, 50) }}</td>
-                        <td>{{ $comment->created_at->format('Y-m-d H:i') }}</td>
+                        <td>{{ $comment->created_at ? $comment->created_at->format('Y-m-d H:i') : 'N/A' }}</td>
                         <td>
                             <div class="btn-group" role="group">
                                 <a href="{{ route('comments.show', $comment) }}" class="btn btn-sm btn-info text-white">
                                     <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('comments.edit', $comment) }}" class="btn btn-sm btn-warning text-white">
-                                    <i class="fas fa-edit"></i>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCommentModal{{ $comment->id }}">
                                     <i class="fas fa-trash"></i>

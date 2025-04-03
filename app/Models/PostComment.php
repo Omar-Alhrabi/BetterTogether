@@ -23,20 +23,24 @@ class PostComment extends Model
     ];
 
     /**
-     * الوقت المنقضي منذ إضافة التعليق بصيغة قابلة للقراءة
+     * Get time ago in human readable format
      */
     public function getTimeAgoAttribute()
     {
-        return $this->created_at->diffForHumans();
+        return $this->created_at ? $this->created_at->diffForHumans() : 'N/A';
     }
 
-    //  Relationships
-
+    /**
+     * Get the post that owns the comment
+     */
     public function post()
     {
         return $this->belongsTo(Post::class);
     }
 
+    /**
+     * Get the user that owns the comment
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
